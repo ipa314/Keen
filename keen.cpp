@@ -38,11 +38,24 @@ const double tspan = 100;
 
 typedef boost::array< double, 3 > state_type;
 
-void keen(const state_type& x, state_type& dxdt, double t)
+double phi(double x, double phi0, double phi1)
 {
-    dxdt[0] = x[0]*(phi1/pow((1-x[1]),2)-phi0-alpha);
-    dxdt[1] = x[1]*( ( k0+k1*atan( k2*(1-x(0)-r0*x(2)) + k3 ) )/nu-alpha-beta-delta );
-    dxdt[2] = x[2]*(r0-( k0+k1*atan( k2*(1-x(0)-r0*x(2)) + k3 ) )/nu+delta)+( k0+k1*atan( k2*(1-x(0)-r0*x(2)) + k3 ) )-(1-x(0));
+    return phi1/pow((1-x),2)-phi0;
+}
+
+double kappa(double k0, double k1, double k2, double k3, double r0, double x0, double x1) 
+{
+    return k0+k1*atan( k2*(1-x0-r0*x1) + k3 );
+}
+
+
+void keen(const state_type& x, state_type& dxdt, double t)
+{   
+    p = phi(x[1],phi0,phi1);
+    k = kappa(k0,k1,k2,k3,r0,x[0],x[2]);
+    dxdt[0] = x[0]*(p-alpha);
+    dxdt[1] = x[1]*( k/nu-alpha-beta-delta );
+    dxdt[2] = x[2]*(r0-k/nu+delta)+k-(1-x(0));
 }
 
 
